@@ -1,7 +1,15 @@
-var binary = require('node-pre-gyp');
 var path = require('path');
-var binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
-var binding = require(binding_path);
+var process = require('process');
+var binding;
+if (process.platform == 'android') {
+  var nativeModule = {exports:{}};
+  process.dlopen(nativeModule, "./libprofiler.so");
+  binding = nativeModule.exports;
+} else {
+  var binary = require('node-pre-gyp');
+  var binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
+  binding = require(binding_path);
+}
 
 var Stream = require('stream').Stream,
     inherits = require('util').inherits;
